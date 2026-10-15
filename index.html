@@ -1,0 +1,212 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NiniFocus</title>
+<style>
+:root{--pink:#f6c5d9;--dark:#a63e70;--bg:#fff8fb;--ink:#493747}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px Arial,sans-serif}
+header{background:#ffe6f0;padding:22px max(18px,calc((100% - 850px)/2))}
+header h1{margin:0;color:var(--dark)}
+header p{margin-bottom:0}
+main{max-width:850px;margin:24px auto;padding:0 15px}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+button{border:0;border-radius:10px;background:#f8dce8;padding:10px 13px;color:var(--ink);cursor:pointer}
+button.primary,.active{background:var(--dark);color:white}
+.panel{background:white;border:1px solid #f1dce6;border-radius:17px;padding:18px;margin-bottom:16px}
+h2{font-size:20px;margin-top:0}
+input,select{width:100%;padding:11px;border:1px solid #ead5df;border-radius:9px;margin:5px 0 12px;background:white;color:var(--ink)}
+label{font-size:13px}
+.task{padding:12px 0;border-bottom:1px solid #f3e5ec;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.task:last-child{border:0}
+.task small{display:block;color:#927989;margin-top:5px}
+.done{text-decoration:line-through;opacity:.55}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.time{text-align:center;font-size:54px;color:var(--dark);font-weight:bold;margin:25px 0}
+.center{text-align:center}
+.muted{font-size:14px;color:#927989;line-height:1.5}
+.stat{font-size:27px;color:var(--dark);font-weight:bold}
+.hidden{display:none}
+footer{text-align:center;color:#927989;font-size:12px;padding:20px}
+@media(max-width:500px){.row{grid-template-columns:1fr}.time{font-size:44px}}
+</style>
+</head>
+<body>
+<header>
+<h1>🌷 NiniFocus</h1>
+<p>Less pressure. One small step at a time.</p>
+</header>
+<main>
+<nav>
+<button class="active" onclick="tab('home',this)">My day</button>
+<button onclick="tab('tasks',this)">Tasks</button>
+<button onclick="tab('focus',this)">Focus</button>
+<button onclick="tab('distractions',this)">Distractions</button>
+</nav>
+
+<section id="home" class="page">
+<div class="panel">
+<h2>Welcome back 💗</h2>
+<p class="muted">You don't have to finish everything. Start with one thing.</p>
+<div class="row">
+<div><span class="muted">Completed tasks</span><div class="stat" id="completed">0</div></div>
+<div><span class="muted">Still to do</span><div class="stat" id="remaining">0</div></div>
+</div>
+</div>
+<div class="panel">
+<h2>Today's priorities</h2>
+<div id="todayList"></div>
+<button class="primary" onclick="tab('tasks',document.querySelectorAll('nav button')[1])">+ Add a task</button>
+</div>
+<div class="panel">
+<h2>Focus time today</h2>
+<div class="stat"><span id="minutes">0</span> minutes</div>
+<p class="muted">Every focused minute counts.</p>
+</div>
+</section>
+
+<section id="tasks" class="page hidden">
+<div class="panel">
+<h2>Add a task</h2>
+<form id="taskForm">
+<label for="taskName">Task name</label>
+<input id="taskName" placeholder="e.g. Study biology" maxlength="120" required>
+<div class="row">
+<div><label for="deadline">Deadline</label><input type="date" id="deadline"></div>
+<div><label for="priority">Priority</label>
+<select id="priority"><option value="1">Normal</option><option value="2">Important</option><option value="3">Urgent</option></select></div>
+</div>
+<button class="primary">Save task</button>
+</form>
+</div>
+<div class="panel"><h2>Your tasks</h2><div id="taskList"></div></div>
+</section>
+
+<section id="focus" class="page hidden">
+<div class="panel center">
+<h2>Focus on one thing 🌸</h2>
+<p class="muted">Choose your own pace. Pause whenever you need.</p>
+<select id="duration" style="max-width:220px">
+<option value="15">15 minutes</option>
+<option value="25" selected>25 minutes</option>
+<option value="45">45 minutes</option>
+<option value="60">60 minutes</option>
+</select>
+<div class="time" id="clock">25:00</div>
+<button class="primary" id="start" onclick="toggleTimer()">Start focus</button>
+<button onclick="resetTimer()">Reset</button>
+<p id="timerMessage" class="muted">Put your phone aside and begin with one task.</p>
+</div>
+</section>
+
+<section id="distractions" class="page hidden">
+<div class="panel">
+<h2>Distraction parking lot 🧺</h2>
+<p class="muted">Write distracting thoughts here so you can return to your work.</p>
+<form id="distractionForm">
+<input id="thought" placeholder="Remember to..." required maxlength="200">
+<button class="primary">Save thought</button>
+</form>
+<div id="thoughtList"></div>
+</div>
+</section>
+</main>
+<footer>NiniFocus · Your progress is saved in this browser.</footer>
+
+<script>
+const $=id=>document.getElementById(id);
+const load=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}};
+let tasks=load('nini_tasks',[]);
+let thoughts=load('nini_thoughts',[]);
+let minutes=load('nini_minutes',0);
+let seconds=1500,interval=null,running=false;
+
+function save(){
+ try{
+ localStorage.setItem('nini_tasks',JSON.stringify(tasks));
+ localStorage.setItem('nini_thoughts',JSON.stringify(thoughts));
+ localStorage.setItem('nini_minutes',JSON.stringify(minutes));
+ }catch{alert('Your browser could not save data. Check available storage.')}
+}
+function tab(id,button){
+ document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));
+ $(id).classList.remove('hidden');
+ document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
+ button.classList.add('active');
+ render();
+}
+$('taskForm').onsubmit=e=>{
+ e.preventDefault();
+ tasks.push({id:Date.now(),name:$('taskName').value.trim(),deadline:$('deadline').value,priority:+$('priority').value,done:false});
+ save();e.target.reset();render();
+};
+function sorted(list){
+ return [...list].sort((a,b)=>Number(a.done)-Number(b.done)||b.priority-a.priority||(a.deadline||'9999').localeCompare(b.deadline||'9999'));
+}
+function taskRow(t){
+ const row=document.createElement('div');row.className='task';
+ const info=document.createElement('div');
+ const name=document.createElement('strong');name.textContent=t.name;
+ if(t.done)name.className='done';
+ info.append(name);
+ const meta=document.createElement('small');
+ meta.textContent=(t.deadline?'Due '+t.deadline+' · ':'')+['','Normal','Important','Urgent'][t.priority];
+ info.append(meta);
+ const actions=document.createElement('div');
+ const check=document.createElement('button');check.textContent=t.done?'Undo':'✓';
+ check.onclick=()=>{t.done=!t.done;save();render()};
+ const del=document.createElement('button');del.textContent='×';
+ del.onclick=()=>{tasks=tasks.filter(x=>x.id!==t.id);save();render()};
+ actions.append(check,del);row.append(info,actions);return row;
+}
+function render(){
+ $('completed').textContent=tasks.filter(t=>t.done).length;
+ $('remaining').textContent=tasks.filter(t=>!t.done).length;
+ $('minutes').textContent=minutes;
+ for(const [id,list] of [['taskList',sorted(tasks)],['todayList',sorted(tasks.filter(t=>!t.done)).slice(0,5)]]){
+  $(id).replaceChildren();
+  if(!list.length){const p=document.createElement('p');p.className='muted';p.textContent='No tasks yet. Add one small task to get started.';$(id).append(p)}
+  list.forEach(t=>$(id).append(taskRow(t)));
+ }
+ $('thoughtList').replaceChildren();
+ thoughts.forEach((thought,i)=>{
+  const row=document.createElement('div');row.className='task';
+  const txt=document.createElement('span');txt.textContent=thought;
+  const btn=document.createElement('button');btn.textContent='Done';
+  btn.onclick=()=>{thoughts.splice(i,1);save();render()};
+  row.append(txt,btn);$('thoughtList').append(row);
+ });
+}
+$('distractionForm').onsubmit=e=>{
+ e.preventDefault();thoughts.unshift($('thought').value.trim());$('thought').value='';save();render();
+};
+function display(){
+ $('clock').textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');
+}
+$('duration').onchange=()=>{if(!running){seconds=+$('duration').value*60;display()}};
+function toggleTimer(){
+ if(running){clearInterval(interval);running=false;$('start').textContent='Resume focus';return}
+ running=true;$('start').textContent='Pause';
+ interval=setInterval(()=>{
+  seconds--;display();
+  if(seconds<=0){
+   clearInterval(interval);running=false;
+   minutes+=+$('duration').value;save();render();
+   $('start').textContent='Start focus';
+   $('timerMessage').textContent='Session complete! Well done for showing up. 💗';
+   alert('Focus session complete! Take a little break.');
+  }
+ },1000);
+}
+function resetTimer(){
+ clearInterval(interval);running=false;seconds=+$('duration').value*60;display();
+ $('start').textContent='Start focus';
+}
+render();display();
+</script>
+</body>
+</html>
+
