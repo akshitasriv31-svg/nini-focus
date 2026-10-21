@@ -4,209 +4,1460 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NiniFocus</title>
+<title>NiniFocus | Your Gentle Productivity Space</title>
+
 <style>
-:root{--pink:#f6c5d9;--dark:#a63e70;--bg:#fff8fb;--ink:#493747}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px Arial,sans-serif}
-header{background:#ffe6f0;padding:22px max(18px,calc((100% - 850px)/2))}
-header h1{margin:0;color:var(--dark)}
-header p{margin-bottom:0}
-main{max-width:850px;margin:24px auto;padding:0 15px}
-nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
-button{border:0;border-radius:10px;background:#f8dce8;padding:10px 13px;color:var(--ink);cursor:pointer}
-button.primary,.active{background:var(--dark);color:white}
-.panel{background:white;border:1px solid #f1dce6;border-radius:17px;padding:18px;margin-bottom:16px}
-h2{font-size:20px;margin-top:0}
-input,select{width:100%;padding:11px;border:1px solid #ead5df;border-radius:9px;margin:5px 0 12px;background:white;color:var(--ink)}
-label{font-size:13px}
-.task{padding:12px 0;border-bottom:1px solid #f3e5ec;display:flex;justify-content:space-between;gap:10px;align-items:center}
-.task:last-child{border:0}
-.task small{display:block;color:#927989;margin-top:5px}
-.done{text-decoration:line-through;opacity:.55}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.time{text-align:center;font-size:54px;color:var(--dark);font-weight:bold;margin:25px 0}
-.center{text-align:center}
-.muted{font-size:14px;color:#927989;line-height:1.5}
-.stat{font-size:27px;color:var(--dark);font-weight:bold}
-.hidden{display:none}
-footer{text-align:center;color:#927989;font-size:12px;padding:20px}
-@media(max-width:500px){.row{grid-template-columns:1fr}.time{font-size:44px}}
+:root {
+  --pink: #f6c5d9;
+  --dark: #a63e70;
+  --bg: #fff8fb;
+  --ink: #493747;
+  --muted: #927989;
+  --card: #ffffff;
+  --border: #f1dce6;
+  --soft: #ffe6f0;
+  --green: #dff3e8;
+  --shadow: 0 8px 25px rgba(166, 62, 112, .07);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px Arial, sans-serif;
+  line-height: 1.5;
+}
+
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+
+header {
+  background: var(--soft);
+  padding: 24px max(18px, calc((100% - 1050px)/2));
+  border-bottom: 1px solid var(--border);
+}
+
+.header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+header h1 {
+  margin: 0;
+  color: var(--dark);
+  font-size: 29px;
+}
+
+header p { margin: 5px 0 0; color: var(--muted); }
+
+main { max-width: 1050px; margin: 25px auto; padding: 0 16px; }
+
+nav {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+button {
+  border: 0;
+  border-radius: 10px;
+  background: #f8dce8;
+  padding: 10px 13px;
+  color: var(--ink);
+  transition: opacity .2s, transform .2s;
+}
+
+button:hover { opacity: .85; }
+button:active { transform: scale(.98); }
+
+button.primary, button.active {
+  background: var(--dark);
+  color: white;
+}
+
+button.secondary {
+  background: #f0e6f7;
+  color: #664b76;
+}
+
+button.danger {
+  background: #fff0f0;
+  color: #a33d50;
+}
+
+button:disabled { opacity: .5; cursor: not-allowed; }
+
+.panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 17px;
+  padding: 20px;
+  margin-bottom: 17px;
+  box-shadow: var(--shadow);
+}
+
+h2 { font-size: 20px; margin: 0 0 12px; }
+h3 { font-size: 16px; margin: 0 0 9px; }
+
+.muted { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.small { font-size: 12px; color: var(--muted); }
+.center { text-align: center; }
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.three {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.stat-card {
+  background: #fff8fb;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 15px;
+}
+
+.stat {
+  font-size: 28px;
+  font-weight: bold;
+  color: var(--dark);
+  margin-top: 3px;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  margin: 9px 0 5px;
+  font-weight: bold;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #ead5df;
+  border-radius: 9px;
+  background: white;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+textarea { resize: vertical; min-height: 75px; }
+input:focus, select:focus, textarea:focus {
+  outline: 2px solid var(--pink);
+  outline-offset: 1px;
+}
+
+.task {
+  padding: 14px 0;
+  border-bottom: 1px solid #f3e5ec;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.task:last-child { border-bottom: 0; }
+.task-info { min-width: 0; flex: 1; overflow-wrap: anywhere; }
+.task-info strong { display: block; }
+.task-info small { display: block; margin-top: 4px; color: var(--muted); }
+.task-actions { display: flex; gap: 5px; flex-wrap: wrap; }
+.task-actions button { padding: 7px 10px; }
+.done { text-decoration: line-through; opacity: .55; }
+
+.tag {
+  display: inline-block;
+  background: #f8eaf1;
+  border-radius: 20px;
+  padding: 3px 8px;
+  font-size: 11px;
+  margin: 4px 4px 0 0;
+}
+
+.tag.urgent { background: #ffe3e3; color: #a33d50; }
+.tag.important { background: #fff0d8; color: #855e1b; }
+.tag.complete { background: var(--green); color: #31664a; }
+
+.filter-row {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+
+.filter-row button { font-size: 12px; padding: 8px 11px; }
+
+.time {
+  font-size: clamp(45px, 9vw, 70px);
+  color: var(--dark);
+  font-weight: bold;
+  margin: 20px 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.progress-track {
+  background: #f5e7ee;
+  height: 10px;
+  border-radius: 20px;
+  overflow: hidden;
+  margin: 10px 0;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--dark);
+  border-radius: 20px;
+  transition: width .3s;
+}
+
+.quote {
+  background: #fff4f8;
+  padding: 17px;
+  border-radius: 12px;
+  color: var(--dark);
+  font-style: italic;
+}
+
+.hidden { display: none !important; }
+
+.empty {
+  padding: 20px 5px;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.history-item {
+  border-bottom: 1px solid var(--border);
+  padding: 12px 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.history-item:last-child { border: 0; }
+
+footer {
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  padding: 24px;
+}
+
+#toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: white;
+  padding: 12px 18px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  z-index: 10;
+  max-width: 90%;
+  text-align: center;
+}
+
+@media(max-width: 620px) {
+  .row, .three { grid-template-columns: 1fr; }
+  .panel { padding: 15px; }
+  header h1 { font-size: 25px; }
+  .task { align-items: flex-start; }
+  .task-actions { flex-direction: column; }
+}
 </style>
 </head>
+
 <body>
+
 <header>
-<h1>🌷 NiniFocus</h1>
-<p>Less pressure. One small step at a time.</p>
+  <div class="header-inner">
+    <div>
+      <h1>🌷 NiniFocus</h1>
+      <p>Less pressure. One small step at a time.</p>
+    </div>
+    <div class="small" id="todayDate"></div>
+  </div>
 </header>
+
 <main>
-<nav>
-<button class="active" onclick="tab('home',this)">My day</button>
-<button onclick="tab('tasks',this)">Tasks</button>
-<button onclick="tab('focus',this)">Focus</button>
-<button onclick="tab('distractions',this)">Distractions</button>
-</nav>
+  <nav aria-label="Main navigation">
+    <button class="active" data-page="home">My day</button>
+    <button data-page="tasks">Tasks</button>
+    <button data-page="focus">Focus room</button>
+    <button data-page="distractions">Mind parking lot</button>
+    <button data-page="insights">My progress</button>
+    <button data-page="settings">Settings</button>
+  </nav>
 
-<section id="home" class="page">
-<div class="panel">
-<h2>Welcome back 💗</h2>
-<p class="muted">You don't have to finish everything. Start with one thing.</p>
-<div class="row">
-<div><span class="muted">Completed tasks</span><div class="stat" id="completed">0</div></div>
-<div><span class="muted">Still to do</span><div class="stat" id="remaining">0</div></div>
-</div>
-</div>
-<div class="panel">
-<h2>Today's priorities</h2>
-<div id="todayList"></div>
-<button class="primary" onclick="tab('tasks',document.querySelectorAll('nav button')[1])">+ Add a task</button>
-</div>
-<div class="panel">
-<h2>Focus time today</h2>
-<div class="stat"><span id="minutes">0</span> minutes</div>
-<p class="muted">Every focused minute counts.</p>
-</div>
-</section>
+  <!-- HOME -->
+  <section id="home" class="page">
+    <div class="panel">
+      <h2>Welcome back 💗</h2>
+      <p class="muted">You don't have to do everything today. Choose one thing and begin.</p>
 
-<section id="tasks" class="page hidden">
-<div class="panel">
-<h2>Add a task</h2>
-<form id="taskForm">
-<label for="taskName">Task name</label>
-<input id="taskName" placeholder="e.g. Study biology" maxlength="120" required>
-<div class="row">
-<div><label for="deadline">Deadline</label><input type="date" id="deadline"></div>
-<div><label for="priority">Priority</label>
-<select id="priority"><option value="1">Normal</option><option value="2">Important</option><option value="3">Urgent</option></select></div>
-</div>
-<button class="primary">Save task</button>
-</form>
-</div>
-<div class="panel"><h2>Your tasks</h2><div id="taskList"></div></div>
-</section>
+      <div class="three">
+        <div class="stat-card">
+          <div class="muted">Tasks completed</div>
+          <div class="stat" id="homeCompleted">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="muted">Tasks remaining</div>
+          <div class="stat" id="homeRemaining">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="muted">Focus minutes today</div>
+          <div class="stat" id="homeMinutes">0</div>
+        </div>
+      </div>
+    </div>
 
-<section id="focus" class="page hidden">
-<div class="panel center">
-<h2>Focus on one thing 🌸</h2>
-<p class="muted">Choose your own pace. Pause whenever you need.</p>
-<select id="duration" style="max-width:220px">
-<option value="15">15 minutes</option>
-<option value="25" selected>25 minutes</option>
-<option value="45">45 minutes</option>
-<option value="60">60 minutes</option>
-</select>
-<div class="time" id="clock">25:00</div>
-<button class="primary" id="start" onclick="toggleTimer()">Start focus</button>
-<button onclick="resetTimer()">Reset</button>
-<p id="timerMessage" class="muted">Put your phone aside and begin with one task.</p>
-</div>
-</section>
+    <div class="panel">
+      <h2>Today's focus goal 🎯</h2>
+      <div class="row">
+        <div>
+          <div class="stat"><span id="goalDone">0</span><span class="muted"> / </span><span id="goalTotal">60</span></div>
+          <p class="muted">Minutes of focused work today</p>
+        </div>
+        <div>
+          <div class="progress-track"><div class="progress-fill" id="goalBar"></div></div>
+          <p class="muted" id="goalMessage">Every focused minute counts.</p>
+        </div>
+      </div>
+    </div>
 
-<section id="distractions" class="page hidden">
-<div class="panel">
-<h2>Distraction parking lot 🧺</h2>
-<p class="muted">Write distracting thoughts here so you can return to your work.</p>
-<form id="distractionForm">
-<input id="thought" placeholder="Remember to..." required maxlength="200">
-<button class="primary">Save thought</button>
-</form>
-<div id="thoughtList"></div>
-</div>
-</section>
+    <div class="panel">
+      <h2>Today's priorities ✨</h2>
+      <p class="muted">Your next steps, sorted by priority and deadline.</p>
+      <div id="todayList"></div>
+      <button class="primary" data-goto="tasks">+ Add a task</button>
+      <button class="secondary" id="homeFocusBtn">Start a focus session</button>
+    </div>
+
+    <div class="panel">
+      <h2>A little reminder 🌸</h2>
+      <div class="quote" id="quoteText"></div>
+      <button class="secondary" id="newQuote" style="margin-top:12px">Another reminder</button>
+    </div>
+  </section>
+
+  <!-- TASKS -->
+  <section id="tasks" class="page hidden">
+    <div class="panel">
+      <h2>Plan without the pressure 📝</h2>
+      <p class="muted">Break a big task into one small action you can actually start.</p>
+
+      <form id="taskForm">
+        <label for="taskName">What do you need to do?</label>
+        <input id="taskName" placeholder="e.g. Revise chemical bonding" maxlength="120" required>
+
+        <label for="firstStep">What's the tiniest first step?</label>
+        <input id="firstStep" placeholder="e.g. Read two pages of notes" maxlength="160">
+
+        <div class="row">
+          <div>
+            <label for="deadline">Deadline</label>
+            <input type="date" id="deadline">
+          </div>
+          <div>
+            <label for="priority">Priority</label>
+            <select id="priority">
+              <option value="1">Normal</option>
+              <option value="2">Important</option>
+              <option value="3">Urgent</option>
+            </select>
+          </div>
+        </div>
+
+        <label for="subject">Subject or category</label>
+        <input id="subject" placeholder="e.g. Maths, Chemistry, Personal">
+
+        <label for="estimate">Estimated time</label>
+        <select id="estimate">
+          <option value="5">5 minutes</option>
+          <option value="15" selected>15 minutes</option>
+          <option value="25">25 minutes</option>
+          <option value="45">45 minutes</option>
+          <option value="60">60 minutes</option>
+        </select>
+
+        <button class="primary" type="submit">Save task</button>
+      </form>
+    </div>
+
+    <div class="panel">
+      <h2>Your task list</h2>
+      <input id="taskSearch" placeholder="Search your tasks..." aria-label="Search tasks">
+
+      <div class="filter-row" id="taskFilters">
+        <button class="active" data-filter="all">All</button>
+        <button data-filter="open">To do</button>
+        <button data-filter="done">Completed</button>
+        <button data-filter="urgent">Urgent</button>
+      </div>
+
+      <div id="taskList"></div>
+      <button class="secondary" id="deleteCompleted">Clear completed tasks</button>
+    </div>
+  </section>
+
+  <!-- FOCUS ROOM -->
+  <section id="focus" class="page hidden">
+    <div class="panel center">
+      <h2>Your focus room 🌸</h2>
+      <p class="muted">Choose your pace. Pausing is allowed. Rest is productive too.</p>
+
+      <label for="focusTask">What are you focusing on?</label>
+      <select id="focusTask">
+        <option value="">General focus session</option>
+      </select>
+
+      <div class="row" style="text-align:left">
+        <div>
+          <label for="duration">Focus duration</label>
+          <select id="duration">
+            <option value="5">5 minutes — tiny start</option>
+            <option value="15">15 minutes</option>
+            <option value="25" selected>25 minutes</option>
+            <option value="30">30 minutes</option>
+            <option value="45">45 minutes</option>
+            <option value="60">60 minutes</option>
+          </select>
+        </div>
+        <div>
+          <label for="breakDuration">Break duration</label>
+          <select id="breakDuration">
+            <option value="5" selected>5 minutes</option>
+            <option value="10">10 minutes</option>
+            <option value="15">15 minutes</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="timerMode" class="tag">FOCUS SESSION</div>
+      <div class="time" id="clock">25:00</div>
+
+      <div class="progress-track"><div class="progress-fill" id="timerBar"></div></div>
+
+      <button class="primary" id="startTimer">Start focus</button>
+      <button id="resetTimer">Reset</button>
+      <button class="secondary" id="startBreak">Take a break</button>
+
+      <p id="timerMessage" class="muted">Start small. You only need to begin.</p>
+      <p class="small">Switching tabs won't block you. Your timer keeps running while this page stays open.</p>
+    </div>
+
+    <div class="panel">
+      <h2>Your recent sessions</h2>
+      <div id="recentSessions"></div>
+    </div>
+  </section>
+
+  <!-- DISTRACTIONS -->
+  <section id="distractions" class="page hidden">
+    <div class="panel">
+      <h2>Mind parking lot 🧺</h2>
+      <p class="muted">Got a random thought or something to remember? Park it here and return to your task.</p>
+
+      <form id="thoughtForm">
+        <textarea id="thoughtText" placeholder="I need to remember..." maxlength="300" required></textarea>
+        <button class="primary" type="submit">Park this thought</button>
+      </form>
+
+      <div id="thoughtList"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Gentle reset 🌿</h2>
+      <p class="muted">Feeling overwhelmed? Try this mini reset before returning to your work.</p>
+      <div class="quote">1. Relax your shoulders. Take a comfortable breath. Pause for a moment. Choose just one next step.</div>
+      <button class="secondary" id="resetMessage" style="margin-top:12px">I'm ready to try again</button>
+    </div>
+  </section>
+
+  <!-- INSIGHTS -->
+  <section id="insights" class="page hidden">
+    <div class="panel">
+      <h2>Your progress, not perfection 📈</h2>
+      <p class="muted">These numbers are here to help you notice patterns, not judge yourself.</p>
+
+      <div class="three">
+        <div class="stat-card">
+          <div class="muted">Total focus minutes</div>
+          <div class="stat" id="totalMinutes">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="muted">Sessions completed</div>
+          <div class="stat" id="sessionCount">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="muted">Tasks completed</div>
+          <div class="stat" id="totalCompleted">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Focus over the last 7 days</h2>
+      <div id="weeklyChart"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Time by subject</h2>
+      <div id="subjectStats"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Session history</h2>
+      <div id="sessionHistory"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Your little wins 🏆</h2>
+      <div id="achievements"></div>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="settings" class="page hidden">
+    <div class="panel">
+      <h2>Make NiniFocus yours 🎨</h2>
+
+      <label for="dailyGoal">Daily focus goal in minutes</label>
+      <select id="dailyGoal">
+        <option value="15">15 minutes</option>
+        <option value="30">30 minutes</option>
+        <option value="60" selected>60 minutes</option>
+        <option value="90">90 minutes</option>
+        <option value="120">120 minutes</option>
+        <option value="180">180 minutes</option>
+      </select>
+
+      <label for="theme">Choose your theme</label>
+      <select id="theme">
+        <option value="pink">Soft pink</option>
+        <option value="lavender">Lavender dreams</option>
+        <option value="mint">Mint calm</option>
+        <option value="night">Night mode</option>
+      </select>
+
+      <button class="primary" id="saveSettings">Save preferences</button>
+    </div>
+
+    <div class="panel">
+      <h2>Your data</h2>
+      <p class="muted">Your information is stored in this browser on this device. It isn't automatically synced across devices.</p>
+      <button class="secondary" id="exportData">Export my data</button>
+      <button class="danger" id="clearData">Reset all app data</button>
+    </div>
+  </section>
 </main>
-<footer>NiniFocus · Your progress is saved in this browser.</footer>
+
+<footer>
+  NiniFocus · Small steps count. 💗
+</footer>
+
+<div id="toast" class="hidden" role="status" aria-live="polite"></div>
 
 <script>
-const $=id=>document.getElementById(id);
-const load=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}};
-let tasks=load('nini_tasks',[]);
-let thoughts=load('nini_thoughts',[]);
-let minutes=load('nini_minutes',0);
-let seconds=1500,interval=null,running=false;
+"use strict";
 
-function save(){
- try{
- localStorage.setItem('nini_tasks',JSON.stringify(tasks));
- localStorage.setItem('nini_thoughts',JSON.stringify(thoughts));
- localStorage.setItem('nini_minutes',JSON.stringify(minutes));
- }catch{alert('Your browser could not save data. Check available storage.')}
-}
-function tab(id,button){
- document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));
- $(id).classList.remove('hidden');
- document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
- button.classList.add('active');
- render();
-}
-$('taskForm').onsubmit=e=>{
- e.preventDefault();
- tasks.push({id:Date.now(),name:$('taskName').value.trim(),deadline:$('deadline').value,priority:+$('priority').value,done:false});
- save();e.target.reset();render();
+/* ==================================
+   NINIFOCUS: DATA AND STORAGE
+================================== */
+
+const $ = id => document.getElementById(id);
+
+const STORAGE_KEY = "ninifocus_complete_v1";
+
+const todayKey = () => {
+  const d = new Date();
+  return d.getFullYear() + "-" +
+    String(d.getMonth() + 1).padStart(2, "0") + "-" +
+    String(d.getDate()).padStart(2, "0");
 };
-function sorted(list){
- return [...list].sort((a,b)=>Number(a.done)-Number(b.done)||b.priority-a.priority||(a.deadline||'9999').localeCompare(b.deadline||'9999'));
-}
-function taskRow(t){
- const row=document.createElement('div');row.className='task';
- const info=document.createElement('div');
- const name=document.createElement('strong');name.textContent=t.name;
- if(t.done)name.className='done';
- info.append(name);
- const meta=document.createElement('small');
- meta.textContent=(t.deadline?'Due '+t.deadline+' · ':'')+['','Normal','Important','Urgent'][t.priority];
- info.append(meta);
- const actions=document.createElement('div');
- const check=document.createElement('button');check.textContent=t.done?'Undo':'✓';
- check.onclick=()=>{t.done=!t.done;save();render()};
- const del=document.createElement('button');del.textContent='×';
- del.onclick=()=>{tasks=tasks.filter(x=>x.id!==t.id);save();render()};
- actions.append(check,del);row.append(info,actions);return row;
-}
-function render(){
- $('completed').textContent=tasks.filter(t=>t.done).length;
- $('remaining').textContent=tasks.filter(t=>!t.done).length;
- $('minutes').textContent=minutes;
- for(const [id,list] of [['taskList',sorted(tasks)],['todayList',sorted(tasks.filter(t=>!t.done)).slice(0,5)]]){
-  $(id).replaceChildren();
-  if(!list.length){const p=document.createElement('p');p.className='muted';p.textContent='No tasks yet. Add one small task to get started.';$(id).append(p)}
-  list.forEach(t=>$(id).append(taskRow(t)));
- }
- $('thoughtList').replaceChildren();
- thoughts.forEach((thought,i)=>{
-  const row=document.createElement('div');row.className='task';
-  const txt=document.createElement('span');txt.textContent=thought;
-  const btn=document.createElement('button');btn.textContent='Done';
-  btn.onclick=()=>{thoughts.splice(i,1);save();render()};
-  row.append(txt,btn);$('thoughtList').append(row);
- });
-}
-$('distractionForm').onsubmit=e=>{
- e.preventDefault();thoughts.unshift($('thought').value.trim());$('thought').value='';save();render();
-};
-function display(){
- $('clock').textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');
-}
-$('duration').onchange=()=>{if(!running){seconds=+$('duration').value*60;display()}};
-function toggleTimer(){
- if(running){clearInterval(interval);running=false;$('start').textContent='Resume focus';return}
- running=true;$('start').textContent='Pause';
- interval=setInterval(()=>{
-  seconds--;display();
-  if(seconds<=0){
-   clearInterval(interval);running=false;
-   minutes+=+$('duration').value;save();render();
-   $('start').textContent='Start focus';
-   $('timerMessage').textContent='Session complete! Well done for showing up. 💗';
-   alert('Focus session complete! Take a little break.');
+
+function readData() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+  } catch {
+    return {};
   }
- },1000);
 }
-function resetTimer(){
- clearInterval(interval);running=false;seconds=+$('duration').value*60;display();
- $('start').textContent='Start focus';
+
+const initial = readData();
+
+let tasks = Array.isArray(initial.tasks) ? initial.tasks : [];
+let thoughts = Array.isArray(initial.thoughts) ? initial.thoughts : [];
+let sessions = Array.isArray(initial.sessions) ? initial.sessions : [];
+let settings = initial.settings || { goal: 60, theme: "pink" };
+
+let timerSeconds = 1500;
+let timerInterval = null;
+let timerRunning = false;
+let timerMode = "focus";
+let timerTotal = 1500;
+let activeFilter = "all";
+let activePage = "home";
+let toastTimeout = null;
+
+function saveData() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      tasks, thoughts, sessions, settings
+    }));
+  } catch {
+    showToast("Couldn't save data. Your browser storage may be full.");
+  }
 }
-render();display();
+
+function showToast(message) {
+  const toast = $("toast");
+  toast.textContent = message;
+  toast.classList.remove("hidden");
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => toast.classList.add("hidden"), 2800);
+}
+
+/* ==================================
+   NAVIGATION
+================================== */
+
+function goToPage(page) {
+  if (!$ (page)) return;
+
+  activePage = page;
+
+  document.querySelectorAll(".page").forEach(section => {
+    section.classList.toggle("hidden", section.id !== page);
+  });
+
+  document.querySelectorAll("nav button[data-page]").forEach(button => {
+    button.classList.toggle("active", button.dataset.page === page);
+  });
+
+  renderAll();
+}
+
+document.querySelectorAll("nav button[data-page]").forEach(button => {
+  button.addEventListener("click", () => goToPage(button.dataset.page));
+});
+
+document.querySelectorAll("[data-goto]").forEach(button => {
+  button.addEventListener("click", () => goToPage(button.dataset.goto));
+});
+
+$("homeFocusBtn").addEventListener("click", () => goToPage("focus"));
+
+/* ==================================
+   TASK MANAGEMENT
+================================== */
+
+function sortedTasks(list) {
+  return [...list].sort((a, b) =>
+    Number(a.done) - Number(b.done) ||
+    (b.priority || 1) - (a.priority || 1) ||
+    (a.deadline || "9999").localeCompare(b.deadline || "9999")
+  );
+}
+
+function priorityLabel(priority) {
+  return ({ 1: "Normal", 2: "Important", 3: "Urgent" })[priority] || "Normal";
+}
+
+function createTaskElement(task) {
+  const row = document.createElement("div");
+  row.className = "task";
+
+  const info = document.createElement("div");
+  info.className = "task-info";
+
+  const name = document.createElement("strong");
+  name.textContent = task.name;
+  if (task.done) name.className = "done";
+
+  info.append(name);
+
+  const tags = document.createElement("div");
+  const priorityTag = document.createElement("span");
+  priorityTag.className = "tag" +
+    (task.priority === 3 ? " urgent" :
+    task.priority === 2 ? " important" : "");
+  priorityTag.textContent = priorityLabel(task.priority);
+  tags.append(priorityTag);
+
+  if (task.done) {
+    const completedTag = document.createElement("span");
+    completedTag.className = "tag complete";
+    completedTag.textContent = "Completed";
+    tags.append(completedTag);
+  }
+
+  info.append(tags);
+
+  const meta = document.createElement("small");
+  const details = [];
+
+  if (task.subject) details.push(task.subject);
+  if (task.deadline) details.push("Due " + task.deadline);
+  if (task.estimate) details.push(task.estimate + " min");
+
+  meta.textContent = details.join(" · ") || "No deadline set";
+  info.append(meta);
+
+  if (task.firstStep) {
+    const step = document.createElement("small");
+    step.textContent = "First step: " + task.firstStep;
+    info.append(step);
+  }
+
+  const actions = document.createElement("div");
+  actions.className = "task-actions";
+
+  const focusBtn = document.createElement("button");
+  focusBtn.textContent = "Focus";
+  focusBtn.className = "secondary";
+  focusBtn.title = "Focus on this task";
+  focusBtn.addEventListener("click", () => {
+    $("focusTask").value = String(task.id);
+    $("duration").value = String(task.estimate || 25);
+    setTimerMode("focus", true);
+    goToPage("focus");
+    showToast("Ready to focus on: " + task.name);
+  });
+
+  const doneBtn = document.createElement("button");
+  doneBtn.textContent = task.done ? "Undo" : "✓";
+  doneBtn.title = task.done ? "Mark as not completed" : "Mark as completed";
+  doneBtn.addEventListener("click", () => {
+    task.done = !task.done;
+    task.completedAt = task.done ? todayKey() : null;
+    saveData();
+    renderAll();
+    showToast(task.done ? "One little win! 💗" : "Task moved back to your list.");
+  });
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "×";
+  deleteBtn.className = "danger";
+  deleteBtn.title = "Delete task";
+  deleteBtn.addEventListener("click", () => {
+    if (!confirm("Delete this task?")) return;
+    tasks = tasks.filter(item => item.id !== task.id);
+    saveData();
+    renderAll();
+    showToast("Task deleted.");
+  });
+
+  actions.append(focusBtn, doneBtn, deleteBtn);
+  row.append(info, actions);
+  return row;
+}
+
+$("taskForm").addEventListener("submit", event => {
+  event.preventDefault();
+
+  const name = $("taskName").value.trim();
+  if (!name) return;
+
+  tasks.push({
+    id: Date.now() + Math.random(),
+    name,
+    firstStep: $("firstStep").value.trim(),
+    deadline: $("deadline").value,
+    priority: Number($("priority").value),
+    subject: $("subject").value.trim() || "General",
+    estimate: Number($("estimate").value),
+    done: false,
+    createdAt: todayKey(),
+    completedAt: null
+  });
+
+  saveData();
+  event.target.reset();
+  $("priority").value = "1";
+  $("estimate").value = "15";
+
+  renderAll();
+  showToast("Task saved. Start with the tiniest step 🌷");
+});
+
+$("taskSearch").addEventListener("input", renderTaskList);
+
+$("taskFilters").querySelectorAll("button").forEach(button => {
+  button.addEventListener("click", () => {
+    activeFilter = button.dataset.filter;
+
+    $("taskFilters").querySelectorAll("button").forEach(b => {
+      b.classList.toggle("active", b === button);
+    });
+
+    renderTaskList();
+  });
+});
+
+$("deleteCompleted").addEventListener("click", () => {
+  const count = tasks.filter(t => t.done).length;
+
+  if (!count) {
+    showToast("No completed tasks to clear.");
+    return;
+  }
+
+  if (!confirm("Delete all " + count + " completed tasks?")) return;
+
+  tasks = tasks.filter(t => !t.done);
+  saveData();
+  renderAll();
+  showToast("Completed tasks cleared.");
+});
+
+function renderTaskList() {
+  const container = $("taskList");
+  container.replaceChildren();
+
+  const query = $("taskSearch").value.trim().toLowerCase();
+
+  const filtered = sortedTasks(tasks).filter(task => {
+    const matchesFilter =
+      activeFilter === "all" ||
+      (activeFilter === "open" && !task.done) ||
+      (activeFilter === "done" && task.done) ||
+      (activeFilter === "urgent" && !task.done && task.priority === 3);
+
+    const searchable = [
+      task.name, task.firstStep, task.subject
+    ].join(" ").toLowerCase();
+
+    return matchesFilter && searchable.includes(query);
+  });
+
+  if (!filtered.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = query
+      ? "No matching tasks. Try a different search."
+      : "Nothing here yet. Add one small task to begin. 🌷";
+    container.append(empty);
+    return;
+  }
+
+  filtered.forEach(task => container.append(createTaskElement(task)));
+}
+
+function renderTodayList() {
+  const container = $("todayList");
+  container.replaceChildren();
+
+  const pending = sortedTasks(tasks.filter(t => !t.done)).slice(0, 5);
+
+  if (!pending.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = tasks.length
+      ? "All your tasks are done. Take a breath! 💗"
+      : "Your list is empty. Add a task to get started.";
+    container.append(empty);
+    return;
+  }
+
+  pending.forEach(task => container.append(createTaskElement(task)));
+}
+
+/* ==================================
+   FOCUS TIMER AND BREAK MODE
+================================== */
+
+function selectedDuration() {
+  return Number($("duration").value) * 60;
+}
+
+function selectedBreakDuration() {
+  return Number($("breakDuration").value) * 60;
+}
+
+function displayTimer() {
+  const mins = Math.floor(timerSeconds / 60);
+  const secs = timerSeconds % 60;
+
+  $("clock").textContent =
+    String(mins).padStart(2, "0") + ":" +
+    String(secs).padStart(2, "0");
+
+  const elapsed = timerTotal > 0 ? timerTotal - timerSeconds : 0;
+  const percent = timerTotal > 0 ? (elapsed / timerTotal) * 100 : 0;
+
+  $("timerBar").style.width = Math.min(100, Math.max(0, percent)) + "%";
+}
+
+function setTimerMode(mode, reset = true) {
+  if (timerRunning) stopTimer();
+
+  timerMode = mode;
+  timerTotal = mode === "focus" ? selectedDuration() : selectedBreakDuration();
+
+  if (reset) timerSeconds = timerTotal;
+
+  $("timerMode").textContent =
+    mode === "focus" ? "FOCUS SESSION" : "BREAK TIME";
+
+  $("startTimer").textContent =
+    mode === "focus" ? "Start focus" : "Start break";
+
+  $("timerMessage").textContent =
+    mode === "focus"
+      ? "Start small. You only need to begin."
+      : "Step away from your work. You deserve a little rest.";
+
+  displayTimer();
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+  timerRunning = false;
+}
+
+function startTimer() {
+  if (timerRunning) {
+    stopTimer();
+    $("startTimer").textContent = "Resume";
+    $("timerMessage").textContent = "Paused. Continue whenever you're ready.";
+    return;
+  }
+
+  if (timerSeconds <= 0) {
+    timerTotal = timerMode === "focus" ? selectedDuration() : selectedBreakDuration();
+    timerSeconds = timerTotal;
+  }
+
+  timerRunning = true;
+  $("startTimer").textContent = "Pause";
+
+  const startedAt = Date.now();
+  let lastTick = startedAt;
+
+  timerInterval = setInterval(() => {
+    const now = Date.now();
+    const elapsed = Math.floor((now - lastTick) / 1000);
+
+    if (elapsed <= 0) return;
+
+    lastTick += elapsed * 1000;
+    timerSeconds = Math.max(0, timerSeconds - elapsed);
+    displayTimer();
+
+    if (timerSeconds <= 0) finishTimer();
+  }, 250);
+}
+
+function finishTimer() {
+  stopTimer();
+  $("startTimer").textContent = "Start again";
+
+  if (timerMode === "focus") {
+    const taskId = $("focusTask").value;
+    const task = tasks.find(t => String(t.id) === taskId);
+    const duration = Math.round(timerTotal / 60);
+
+    sessions.unshift({
+      id: Date.now(),
+      date: todayKey(),
+      minutes: duration,
+      mode: "focus",
+      taskId: task ? task.id : null,
+      taskName: task ? task.name : "General focus",
+      subject: task ? task.subject || "General" : "General"
+    });
+
+    saveData();
+    $("timerMessage").textContent = "Session complete! You showed up for yourself. 💗";
+    showToast("Focus session complete. Well done!");
+  } else {
+    $("timerMessage").textContent = "Your break is complete. Return when you're ready. 🌸";
+    showToast("Break complete. Ready when you are!");
+  }
+
+  renderAll();
+  displayTimer();
+}
+
+$("startTimer").addEventListener("click", startTimer);
+
+$("resetTimer").addEventListener("click", () => {
+  stopTimer();
+  timerTotal = timerMode === "focus" ? selectedDuration() : selectedBreakDuration();
+  timerSeconds = timerTotal;
+  $("startTimer").textContent = timerMode === "focus" ? "Start focus" : "Start break";
+  $("timerMessage").textContent = "Fresh start. Go at your own pace.";
+  displayTimer();
+});
+
+$("startBreak").addEventListener("click", () => {
+  setTimerMode("break");
+});
+
+$("duration").addEventListener("change", () => {
+  if (timerMode === "focus" && !timerRunning) setTimerMode("focus");
+});
+
+$("breakDuration").addEventListener("change", () => {
+  if (timerMode === "break" && !timerRunning) setTimerMode("break");
+});
+
+/* ==================================
+   DISTRACTION PARKING LOT
+================================== */
+
+$("thoughtForm").addEventListener("submit", event => {
+  event.preventDefault();
+
+  const text = $("thoughtText").value.trim();
+  if (!text) return;
+
+  thoughts.unshift({
+    id: Date.now() + Math.random(),
+    text,
+    createdAt: new Date().toISOString()
+  });
+
+  saveData();
+  $("thoughtText").value = "";
+  renderThoughts();
+  showToast("Thought parked. Return to what matters 🌿");
+});
+
+function renderThoughts() {
+  const container = $("thoughtList");
+  container.replaceChildren();
+
+  if (!thoughts.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = "Your parking lot is empty. Add a thought whenever you need to.";
+    container.append(empty);
+    return;
+  }
+
+  thoughts.forEach(thought => {
+    const row = document.createElement("div");
+    row.className = "task";
+
+    const text = document.createElement("div");
+    text.className = "task-info";
+    text.textContent = thought.text;
+
+    const done = document.createElement("button");
+    done.className = "secondary";
+    done.textContent = "Clear";
+    done.addEventListener("click", () => {
+      thoughts = thoughts.filter(t => t.id !== thought.id);
+      saveData();
+      renderThoughts();
+      showToast("Thought cleared.");
+    });
+
+    row.append(text, done);
+    container.append(row);
+  });
+}
+
+$("resetMessage").addEventListener("click", () => {
+  showToast("One small step. No pressure. You've got this. 💗");
+});
+
+/* ==================================
+   INSIGHTS AND SESSION HISTORY
+================================== */
+
+function renderSessions() {
+  const recent = $("recentSessions");
+  const history = $("sessionHistory");
+
+  recent.replaceChildren();
+  history.replaceChildren();
+
+  const focusSessions = sessions.filter(s => s.mode === "focus");
+
+  if (!focusSessions.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = "Your first completed focus session will show up here.";
+    recent.append(empty.cloneNode(true));
+    history.append(empty);
+  } else {
+    focusSessions.slice(0, 3).forEach(s => recent.append(makeSessionRow(s)));
+    focusSessions.slice(0, 30).forEach(s => history.append(makeSessionRow(s)));
+  }
+
+  const today = todayKey();
+  const todayMinutes = focusSessions
+    .filter(s => s.date === today)
+    .reduce((sum, s) => sum + Number(s.minutes || 0), 0);
+
+  const totalMinutes = focusSessions.reduce(
+    (sum, s) => sum + Number(s.minutes || 0), 0
+  );
+
+  $("homeMinutes").textContent = todayMinutes;
+  $("goalDone").textContent = todayMinutes;
+  $("goalTotal").textContent = settings.goal;
+  $("goalBar").style.width =
+    Math.min(100, todayMinutes / Math.max(1, settings.goal) * 100) + "%";
+
+  $("goalMessage").textContent = todayMinutes >= settings.goal
+    ? "You reached today's goal! Celebrate your progress. 💗"
+    : (settings.goal - todayMinutes) + " more minutes to reach your goal. No pressure.";
+
+  $("totalMinutes").textContent = totalMinutes;
+  $("sessionCount").textContent = focusSessions.length;
+  $("totalCompleted").textContent = tasks.filter(t => t.done).length;
+
+  renderWeeklyChart(focusSessions);
+  renderSubjectStats(focusSessions);
+  renderAchievements(focusSessions, totalMinutes);
+}
+
+function makeSessionRow(session) {
+  const row = document.createElement("div");
+  row.className = "history-item";
+
+  const info = document.createElement("div");
+  const title = document.createElement("strong");
+  title.textContent = session.taskName || "General focus";
+
+  const detail = document.createElement("div");
+  detail.className = "small";
+  detail.textContent = (session.subject || "General") + " · " + session.date;
+
+  info.append(title, detail);
+
+  const duration = document.createElement("strong");
+  duration.textContent = session.minutes + " min";
+
+  row.append(info, duration);
+  return row;
+}
+
+function renderWeeklyChart(focusSessions) {
+  const container = $("weeklyChart");
+  container.replaceChildren();
+
+  const days = [];
+
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+
+    const key = date.getFullYear() + "-" +
+      String(date.getMonth() + 1).padStart(2, "0") + "-" +
+      String(date.getDate()).padStart(2, "0");
+
+    const minutes = focusSessions
+      .filter(s => s.date === key)
+      .reduce((sum, s) => sum + Number(s.minutes || 0), 0);
+
+    days.push({
+      label: date.toLocaleDateString(undefined, { weekday: "short" }),
+      minutes
+    });
+  }
+
+  const max = Math.max(30, ...days.map(d => d.minutes));
+
+  days.forEach(day => {
+    const row = document.createElement("div");
+    row.style.margin = "12px 0";
+
+    const heading = document.createElement("div");
+    heading.style.display = "flex";
+    heading.style.justifyContent = "space-between";
+    heading.className = "small";
+    heading.textContent = day.label + " · " + day.minutes + " min";
+
+    const track = document.createElement("div");
+    track.className = "progress-track";
+
+    const fill = document.createElement("div");
+    fill.className = "progress-fill";
+    fill.style.width = Math.min(100, day.minutes / max * 100) + "%";
+
+    track.append(fill);
+    row.append(heading, track);
+    container.append(row);
+  });
+}
+
+function renderSubjectStats(focusSessions) {
+  const container = $("subjectStats");
+  container.replaceChildren();
+
+  const totals = {};
+
+  focusSessions.forEach(session => {
+    const subject = session.subject || "General";
+    totals[subject] = (totals[subject] || 0) + Number(session.minutes || 0);
+  });
+
+  const entries = Object.entries(totals).sort((a, b) => b[1] - a[1]);
+
+  if (!entries.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = "Choose a task and complete a focus session to see time by subject.";
+    container.append(empty);
+    return;
+  }
+
+  const max = Math.max(1, ...entries.map(entry => entry[1]));
+
+  entries.forEach(([subject, minutes]) => {
+    const row = document.createElement("div");
+    row.style.margin = "12px 0";
+
+    const heading = document.createElement("div");
+    heading.style.display = "flex";
+    heading.style.justifyContent = "space-between";
+    heading.className = "small";
+    heading.textContent = subject + " · " + minutes + " min";
+
+    const track = document.createElement("div");
+    track.className = "progress-track";
+
+    const fill = document.createElement("div");
+    fill.className = "progress-fill";
+    fill.style.width = (minutes / max * 100) + "%";
+
+    track.append(fill);
+    row.append(heading, track);
+    container.append(row);
+  });
+}
+
+function renderAchievements(focusSessions, totalMinutes) {
+  const container = $("achievements");
+  container.replaceChildren();
+
+  const completedTasks = tasks.filter(t => t.done).length;
+  const achievements = [
+    ["🌱", "First step", focusSessions.length >= 1, "Complete your first focus session"],
+    ["🌷", "Task tamer", completedTasks >= 1, "Complete your first task"],
+    ["🔥", "Five sessions", focusSessions.length >= 5, "Complete five focus sessions"],
+    ["⏳", "Hour of focus", totalMinutes >= 60, "Accumulate 60 focus minutes"],
+    ["🏆", "Ten tasks", completedTasks >= 10, "Complete ten tasks"]
+  ];
+
+  achievements.forEach(([emoji, title, unlocked, description]) => {
+    const item = document.createElement("div");
+    item.className = "task";
+
+    const info = document.createElement("div");
+    info.className = "task-info";
+
+    const name = document.createElement("strong");
+    name.textContent = emoji + " " + title;
+
+    const detail = document.createElement("small");
+    detail.textContent = unlocked ? "Unlocked! " + description : description;
+
+    info.append(name, detail);
+
+    const badge = document.createElement("span");
+    badge.className = "tag" + (unlocked ? " complete" : "");
+    badge.textContent = unlocked ? "Unlocked" : "In progress";
+
+    item.append(info, badge);
+    container.append(item);
+  });
+}
+
+/* ==================================
+   DAILY QUOTES
+================================== */
+
+const quotes = [
+  "You don't need motivation for the whole day. Just enough to begin.",
+  "Progress is still progress, even when it feels small.",
+  "Your pace is allowed to be different.",
+  "A messy beginning is better than waiting for perfect.",
+  "Rest is part of the process, not a failure.",
+  "You are allowed to start again as many times as you need.",
+  "One small action can make the next one easier.",
+  "You do not have to earn your breaks.",
+  "Focus on the next step, not the entire staircase."
+];
+
+function newQuote() {
+  const previous = $("quoteText").textContent;
+  let quote = quotes[Math.floor(Math.random() * quotes.length)];
+
+  if (quotes.length > 1 && quote === previous) {
+    quote = quotes[(quotes.indexOf(quote) + 1) % quotes.length];
+  }
+
+  $("quoteText").textContent = "“" + quote + "”";
+}
+
+$("newQuote").addEventListener("click", newQuote);
+
+/* ==================================
+   SETTINGS AND THEMES
+================================== */
+
+const themes = {
+  pink: {
+    bg: "#fff8fb", ink: "#493747", dark: "#a63e70",
+    soft: "#ffe6f0", border: "#f1dce6"
+  },
+  lavender: {
+    bg: "#faf7ff", ink: "#443653", dark: "#8056a5",
+    soft: "#eee4ff", border: "#e4d8f3"
+  },
+  mint: {
+    bg: "#f5fcf8", ink: "#314a40", dark: "#43866b",
+    soft: "#dff3e8", border: "#d5e9de"
+  },
+  night: {
+    bg: "#211d29", ink: "#f2e8f4", dark: "#d58bb6",
+    soft: "#34283b", border: "#49394e"
+  }
+};
+
+function applyTheme(themeName) {
+  const theme = themes[themeName] || themes.pink;
+  const root = document.documentElement;
+
+  root.style.setProperty("--bg", theme.bg);
+  root.style.setProperty("--ink", theme.ink);
+  root.style.setProperty("--dark", theme.dark);
+  root.style.setProperty("--soft", theme.soft);
+  root.style.setProperty("--border", theme.border);
+
+  const isNight = themeName === "night";
+  root.style.setProperty("--card", isNight ? "#2c2635" : "#ffffff");
+  root.style.setProperty("--muted", isNight ? "#c0afc8" : "#927989");
+
+  document.querySelectorAll("input, select, textarea").forEach(el => {
+    el.style.background = isNight ? "#342e3d" : "#ffffff";
+    el.style.color = theme.ink;
+  });
+}
+
+$("saveSettings").addEventListener("click", () => {
+  settings.goal = Number($("dailyGoal").value);
+  settings.theme = $("theme").value;
+
+  applyTheme(settings.theme);
+  saveData();
+  renderSessions();
+
+  showToast("Your preferences are saved! 💗");
+});
+
+$("exportData").addEventListener("click", () => {
+  const data = JSON.stringify({ tasks, thoughts, sessions, settings }, null, 2);
+  const blob = new Blob([data], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = "ninifocus-backup.json";
+  link.click();
+
+  URL.revokeObjectURL(url);
+  showToast("Your data export has started.");
+});
+
+$("clearData").addEventListener("click", () => {
+  if (!confirm("This will permanently delete your tasks, thoughts, and focus history from this browser. Continue?")) return;
+
+  stopTimer();
+  tasks = [];
+  thoughts = [];
+  sessions = [];
+  settings = { goal: 60, theme: "pink" };
+
+  $("dailyGoal").value = "60";
+  $("theme").value = "pink";
+  $("taskSearch").value = "";
+
+  applyTheme("pink");
+  saveData();
+  setTimerMode("focus");
+  renderAll();
+
+  showToast("Your app data has been reset.");
+});
+
+/* ==================================
+   GENERAL RENDERING
+================================== */
+
+function renderFocusTaskOptions() {
+  const select = $("focusTask");
+  const selected = select.value;
+
+  select.replaceChildren();
+
+  const general = document.createElement("option");
+  general.value = "";
+  general.textContent = "General focus session";
+  select.append(general);
+
+  sortedTasks(tasks.filter(t => !t.done)).forEach(task => {
+    const option = document.createElement("option");
+    option.value = String(task.id);
+    option.textContent = task.name;
+    select.append(option);
+  });
+
+  if ([...select.options].some(o => o.value === selected)) {
+    select.value = selected;
+  }
+}
+
+function renderAll() {
+  $("homeCompleted").textContent = tasks.filter(t => t.done).length;
+  $("homeRemaining").textContent = tasks.filter(t => !t.done).length;
+
+  renderTodayList();
+  renderTaskList();
+  renderThoughts();
+  renderFocusTaskOptions();
+  renderSessions();
+}
+
+function initialize() {
+  $("todayDate").textContent = new Date().toLocaleDateString(undefined, {
+    weekday: "long",
+    month: "short",
+    day: "numeric"
+  });
+
+  $("dailyGoal").value = String(settings.goal || 60);
+  $("theme").value = settings.theme || "pink";
+
+  applyTheme(settings.theme || "pink");
+  newQuote();
+  setTimerMode("focus");
+  renderAll();
+}
+
+initialize();
 </script>
+
 </body>
 </html>
 
